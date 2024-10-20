@@ -7,6 +7,7 @@
 
 import React from 'react';
 import type {PropsWithChildren} from 'react';
+import { TEST } from '@env';
 import {
   SafeAreaView,
   ScrollView,
@@ -82,6 +83,7 @@ function App(): React.JSX.Element {
           </Section>
           <Section title="See Your Changes">
             <ReloadInstructions />
+            <Text>{TEST}</Text>
           </Section>
           <Section title="Debug">
             <DebugInstructions />
