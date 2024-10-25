@@ -1,29 +1,13 @@
 import React from 'react';
-import {TEST} from '@env';
-import {SafeAreaView, StatusBar, StyleSheet, Text, View} from 'react-native';
+import { AuthProvider } from './src/context/AuthContext';
+import AppNavigator from './src/navigation/AppNavigator';
 
 function App(): React.JSX.Element {
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle={'dark-content'} backgroundColor={'white'} />
-
-      <View style={styles.contentContainer}>
-        <Text>{'Hello, this is my chat app'}</Text>
-        <Text>{TEST}</Text>
-      </View>
-    </SafeAreaView>
+    <AuthProvider>
+      <AppNavigator />
+    </AuthProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
 
 export default App;

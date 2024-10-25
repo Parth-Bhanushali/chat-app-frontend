@@ -1,3 +1,3 @@
 declare module '@env' {
-  export const TEST: string;
+  export const SERVER_URL: string;
 }
