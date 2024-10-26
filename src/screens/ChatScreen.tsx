@@ -42,7 +42,8 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
       }
 
       if (isCorrectChatOpen) {
-        setMessages(prev => [...prev, message]);
+        setMessages(prev => [message, ...prev]);
+        setTimeout(() => flatlistRef.current?.scrollToIndex({ index: 0, animated: true, viewOffset: 50 }), 200);
       }
     });
 
@@ -80,7 +81,7 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
           Authorization: user.token,
         },
       });
-      setMessages(response.data);
+      setMessages(response.data.reverse());
     } catch (error) {
       console.log('Error fetching messages:', error);
       console.log(JSON.stringify(error, null, 3));
@@ -94,12 +95,6 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
     fetchMessages();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const handleScrollToEnd = (width: number, height: number) => {
-    if (flatlistRef.current) {
-      flatlistRef.current.scrollToOffset({offset: height});
-    }
-  };
 
   const renderMessageItem = React.useCallback(
     ({item, index}: {item: any; index: number}) => {
@@ -121,7 +116,7 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
       <FlatList
         data={messages}
         ref={flatlistRef}
-        onContentSizeChange={handleScrollToEnd}
+        inverted
         renderItem={renderMessageItem}
         contentContainerStyle={styles.contentContainer}
       />
