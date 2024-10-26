@@ -32,8 +32,6 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) 
       }
       setUser(userFromStorage);
     })();
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

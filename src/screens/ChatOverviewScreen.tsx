@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 export interface Contact {
   _id: string;
   username: string;
+  fullName: string;
 }
 
 const ChatOverviewScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -16,7 +17,7 @@ const ChatOverviewScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     try {
       const response = await api.get('/chat/contacts', {
         headers: {
-          'Authorization': user.token,
+          'Authorization': user.accessToken,
         },
       });
       setContacts(response.data);
@@ -31,12 +32,10 @@ const ChatOverviewScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <Text>Profile</Text>
     </TouchableOpacity>),
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
   useEffect(() => {
     fetchContacts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleContactPress = (contact: Contact) => {

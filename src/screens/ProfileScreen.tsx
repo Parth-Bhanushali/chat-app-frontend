@@ -24,6 +24,9 @@ const ProfileScreen = (props: Props) => {
 			<View style={styles.profileDetailsContainer}>
 				<Text>id: {user.id}</Text>
 				<Text>username: {user.username}</Text>
+				<Text>fullname: {user.fullName}</Text>
+				<Text>accessToken: {user.accessToken}</Text>
+				<Text>refreshToken: {user.refreshToken}</Text>
 			</View>
 
 			<Button title="Logout" onPress={handleLogout} />
@@ -42,5 +45,6 @@ const styles = StyleSheet.create({
 	},
 	profileDetailsContainer: {
 		flex: 1,
+		gap: 8
 	},
 });

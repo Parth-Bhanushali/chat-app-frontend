@@ -7,12 +7,24 @@ import {
   Text,
   StyleSheet,
 } from 'react-native';
-import io from 'socket.io-client';
+import io, { Socket } from 'socket.io-client';
 import {useAuth} from '../context/AuthContext';
 import api from '../api/api';
 import {SERVER_URL} from '@env';
 import { useNavigation } from '@react-navigation/native';
 import { Contact } from './ChatOverviewScreen';
+import { DefaultEventsMap } from '@socket.io/component-emitter';
+import { timeAgo } from '../lib/utils';
+import HeaderLeft from '../components/HeaderLeft';
+import HeaderTitle from '../components/HeaderTitle';
+
+const subscribeToUserStatus = (socket: Socket<DefaultEventsMap, DefaultEventsMap>, targetUserId: string) => {
+  socket.emit('subscribeToUserStatus', targetUserId);
+};
+
+const unsubscribeToUserStatus = (socket: Socket<DefaultEventsMap, DefaultEventsMap>, targetUserId: string) => {
+  socket.emit('unsubscribeToUserStatus', targetUserId);
+};
 
 const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
   route,
@@ -22,6 +34,7 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
   const navigation = useNavigation();
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const [recipientStatus, setRecipientStatus] = useState<'loading'|'online'|string>('loading');
   const flatlistRef = useRef<FlatList | null>(null);
 
   const socket = useMemo(() => io(SERVER_URL), []);
@@ -29,6 +42,13 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
   useEffect(() => {
     socket.on('connect', () => {
       socket.emit('registerUser', user.id);
+      subscribeToUserStatus(socket, chatWith._id);
+    });
+
+    socket.on('userStatusChanged', (iStatus) => {
+      const { isOnline, lastSeen } = iStatus;
+      const newStatus = isOnline ? 'online' : timeAgo(lastSeen);
+      setRecipientStatus(newStatus);
     });
 
     socket.on('receiveMessage', message => {
@@ -48,10 +68,11 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
     });
 
     return () => {
+      unsubscribeToUserStatus(socket, chatWith._id);
+      socket.off('userStatusChanged');
       socket.off('receiveMessage');
       socket.disconnect();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const sendMessage = async () => {
@@ -63,7 +84,7 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
     try {
       await api.post('/chat/messages', messageData, {
         headers: {
-          Authorization: user.token,
+          Authorization: user.accessToken,
         },
       });
       setNewMessage('');
@@ -73,27 +94,52 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
   };
 
   const fetchMessages = React.useCallback(async () => {
-    console.log('Fetching messages with token: ', user.token);
-
     try {
       const response = await api.get('/chat/messages/' + chatWith._id, {
         headers: {
-          Authorization: user.token,
+          Authorization: user.accessToken,
         },
       });
       setMessages(response.data.reverse());
     } catch (error) {
       console.log('Error fetching messages:', error);
-      console.log(JSON.stringify(error, null, 3));
     }
-  }, [user.token, chatWith._id]);
+  }, [user.accessToken, chatWith._id]);
+
+  const pollUserStatus = React.useCallback(async () => {
+    try {
+      const response = await api.get(`/users/${chatWith._id}/status`, {
+        headers: {
+          Authorization: user.accessToken,
+        },
+      });
+
+      const { isOnline, lastSeen } = response.data;
+      const newStatus = isOnline ? 'online' : timeAgo(lastSeen);
+      setRecipientStatus(newStatus);
+    } catch (error) {
+      console.log('Error polling user status:', error);
+    }
+  }, []);
+
+  const headerLeft = React.useCallback(() => HeaderLeft(navigation), [navigation]);
+  const headerTitle = React.useCallback(() =>
+  <HeaderTitle
+    title={chatWith.fullName}
+    subtitle={recipientStatus}
+    profileImageChar={chatWith.fullName[0].toUpperCase()} />
+    , [recipientStatus, chatWith.fullName]);
 
   useEffect(() => {
     navigation.setOptions({
-      headerTitle: chatWith.username[0].toUpperCase() + chatWith.username.slice(1).toLocaleLowerCase(),
+      headerLeft: headerLeft,
+      headerTitle: headerTitle,
     });
+  }, [recipientStatus]);
+
+  useEffect(() => {
     fetchMessages();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    pollUserStatus();
   }, []);
 
   const renderMessageItem = React.useCallback(

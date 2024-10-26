@@ -3,12 +3,13 @@ import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import api from '../api/api';
 
 const RegisterScreen = ({ navigation }: any) => {
+  const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleRegister = async () => {
     try {
-      await api.post('/auth/register', { username, password });
+      await api.post('/auth/register', { username, fullName, password });
       navigation.navigate('login');
     } catch (error) {
       console.log('Registration failed:', error);
@@ -18,6 +19,7 @@ const RegisterScreen = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
+      <TextInput placeholder="Full name" value={fullName} onChangeText={setFullName} />
       <TextInput placeholder="Username" value={username} onChangeText={setUsername} />
       <TextInput placeholder="Password" secureTextEntry value={password} onChangeText={setPassword} />
 
