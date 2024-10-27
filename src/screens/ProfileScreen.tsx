@@ -2,10 +2,10 @@ import { Button, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
+import { formatJoinedDate } from '../lib/utils';
+import Watermark from '../components/Watermark';
 
-type Props = {}
-
-const ProfileScreen = (props: Props) => {
+const ProfileScreen = () => {
 	const { logout, user } = useAuth();
 	const navigation = useNavigation();
 
@@ -22,13 +22,13 @@ const ProfileScreen = (props: Props) => {
 	return (
 		<View style={styles.container}>
 			<View style={styles.profileDetailsContainer}>
-				<Text>id: {user.id}</Text>
-				<Text>username: {user.username}</Text>
-				<Text>fullname: {user.fullName}</Text>
-				<Text>accessToken: {user.accessToken}</Text>
-				<Text>refreshToken: {user.refreshToken}</Text>
+				<Text>User ID: {user.id}</Text>
+				<Text>Username: {user.username}</Text>
+				<Text>Full Name: {user.fullName}</Text>
+				<Text>Joined on: {formatJoinedDate(user.createdAt)}</Text>
 			</View>
 
+			<Watermark />
 			<Button title="Logout" onPress={handleLogout} />
 		</View>
 	);
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: 'white',
 		gap: 16,
-		padding: 16,
+		padding: 20,
 	},
 	profileDetailsContainer: {
 		flex: 1,

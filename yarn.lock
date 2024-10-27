@@ -5091,6 +5091,8 @@ __metadata:
     react-native-gesture-handler: ^2.20.0
     react-native-safe-area-context: ^4.11.1
     react-native-screens: ^3.34.0
+    react-native-simple-toast: ^3.3.1
+    react-native-snackbar: ^2.8.0
     react-native-vector-icons: ^10.2.0
     react-test-renderer: 18.3.1
     socket.io-client: ^4.8.0
@@ -8141,6 +8143,26 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 28c1f6e556c318ffcbd79d153b9612cc8a0b8d8b70f909d3cde2fd6d0586a7c151a449e57400d8996f4ee6c3b5140c5c4f643a427e974f6dc573b2bcd8eb7356
+  languageName: node
+  linkType: hard
+
+"react-native-simple-toast@npm:^3.3.1":
+  version: 3.3.1
+  resolution: "react-native-simple-toast@npm:3.3.1"
+  peerDependencies:
+    react: "*"
+    react-native: ">=0.71.0"
+  checksum: 0f535a469b9519f761ee0224828df8e531fb92ad5e9accefdc04aafcd896da4c6fead488fe6911ccc11592f325707499f4b696768afd8c20cefe06fa6cdac50f
+  languageName: node
+  linkType: hard
+
+"react-native-snackbar@npm:^2.8.0":
+  version: 2.8.0
+  resolution: "react-native-snackbar@npm:2.8.0"
+  peerDependencies:
+    react: ">=16"
+    react-native: ">=0.60"
+  checksum: 1ec0bf9a08bb06103309e60cca4ea640a79d13819476c2bfce1f642e64a0ffdafa982fa0582f5f67c6c4db612b9e5e2ed07ff333224ad20bd24349415409f3db
   languageName: node
   linkType: hard
 

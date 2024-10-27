@@ -5,3 +5,5 @@ export const ASYNC_STORAGE_USER_KEY = '@user';
 export const logsSafeToIgnore: string[] = [
 	'Require cycle: src\\api\\api.ts -> src\\services\\apiService.ts -> src\\api\\api.ts',
 ];
+
+export const DEVELOPER = 'Parth Bhanushali';

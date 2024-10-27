@@ -4,6 +4,7 @@ import ChatOverviewScreen from '../screens/ChatOverviewScreen';
 import ChatScreen from '../screens/ChatScreen/ChatScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import { useAuth } from '../context/AuthContext';
+import { SocketProvider } from '../context/SocketContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,24 +15,30 @@ export default function MainStack() {
 	}
 
 	return (
-		<Stack.Navigator initialRouteName="chatOverview">
-			<Stack.Screen
-				name="chatOverview"
-				component={ChatOverviewScreen}
-				options={{ headerShown: true, headerTitle: 'Chat Overview' }}
-			/>
+		<SocketProvider>
+			<Stack.Navigator initialRouteName="chatOverview">
+				<Stack.Screen
+					name="chatOverview"
+					component={ChatOverviewScreen}
+					options={{ 
+						headerShown: true,
+						headerTitle: 'Mini Chat App',
+					}}
+				/>
 
-			<Stack.Screen
-				name="chat"
-				component={ChatScreen}
-				options={{ headerShown: true, headerBackVisible: false }}
-			/>
+				<Stack.Screen
+					name="chat"
+					// @ts-ignore
+					component={ChatScreen}
+					options={{ headerShown: true, headerBackVisible: false }}
+				/>
 
-			<Stack.Screen
-				name="profile"
-				component={ProfileScreen}
-				options={{ headerShown: true, headerTitle: 'Profile' }}
-			/>
-		</Stack.Navigator>
+				<Stack.Screen
+					name="profile"
+					component={ProfileScreen}
+					options={{ headerShown: true, headerTitle: 'Profile' }}
+				/>
+			</Stack.Navigator>
+		</SocketProvider>
 	);
 }

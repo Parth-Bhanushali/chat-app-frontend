@@ -1,15 +1,15 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   TextInput,
   StyleSheet,
   ImageBackground,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
-import io, { Socket } from 'socket.io-client';
+import { Socket } from 'socket.io-client';
 import {useAuth} from '../../context/AuthContext';
 import api from '../../api/api';
-import {SERVER_URL} from '@env';
 import { useNavigation } from '@react-navigation/native';
 import { Contact } from '../ChatOverviewScreen';
 import { DefaultEventsMap } from '@socket.io/component-emitter';
@@ -21,6 +21,8 @@ import MessageItem from '../../components/MessageItem';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import type { IRecipientActiveStatus } from '../../types/custom';
 import { FlashList } from '@shopify/flash-list';
+import { useSocket } from '../../context/SocketContext';
+import ListEmptyComponent from './components/ListEmptyComponent';
 
 const subscribeToUserStatus = (socket: Socket<DefaultEventsMap, DefaultEventsMap>, targetUserId: string) => {
   socket.emit('subscribeToUserStatus', targetUserId);
@@ -35,20 +37,18 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
 }) => {
   const {chatWith} = route.params;
   const {user} = useAuth();
+  const socket = useSocket();
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
+  const [errorVal, setErrorVal] = useState('');
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [recipientStatus, setRecipientStatus] = useState<IRecipientActiveStatus>('loading');
   const flatlistRef = useRef<FlashList<any> | null>(null);
   const enableSendButton = newMessage.trim().length > 0;
 
-  const socket = useMemo(() => io(SERVER_URL), []);
-
   useEffect(() => {
-    socket.on('connect', () => {
-      socket.emit('registerUser', user.id);
-      subscribeToUserStatus(socket, chatWith._id);
-    });
+    subscribeToUserStatus(socket, chatWith._id);
 
     socket.on('userStatusChanged', (iStatus) => {
       const { isOnline, lastSeen } = iStatus;
@@ -73,11 +73,8 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
 
     return () => {
       unsubscribeToUserStatus(socket, chatWith._id);
-      socket.off('userStatusChanged');
-      socket.off('receiveMessage');
-      socket.disconnect();
     };
-  }, []);
+  }, [socket]);
 
   const sendMessage = async () => {
     const messageData = {
@@ -88,8 +85,8 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
 
     try {
       await api.post('/chat/messages', messageData);
-    } catch (error) {
-      console.log('Error sending message:', error);
+    } catch (error: any) {
+      Alert.alert('Error', error?.message ?? 'Couldn\'t send message');
     }
   };
 
@@ -97,8 +94,8 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
     try {
       const response = await api.get('/chat/messages/' + chatWith._id);
       setMessages(response.data.reverse());
-    } catch (error) {
-      console.log('Error fetching messages:', error);
+    } catch (error: any) {
+      setErrorVal(error?.message ?? 'Couldn\'t fetch message history');
     }
   }, [user.accessToken, chatWith._id]);
 
@@ -132,13 +129,17 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      fetchMessages();
-      pollUserStatus();
+      setLoading(true);
+
+      Promise.all([fetchMessages(), pollUserStatus()])
+        .finally(() => {
+          setLoading(false);
+        });
     }, 200);
 
     return () => {
       clearTimeout(timeout);
-    }
+    };
   }, []);
 
   const renderMessageItem = React.useCallback(
@@ -159,6 +160,12 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
 
   return (
     <ImageBackground style={styles.BG} source={require('../../assets/pattern.png')}>
+      <ListEmptyComponent 
+        loading={loading} 
+        error={errorVal} 
+        empty={!messages || messages.length === 0} 
+      />
+
       <View style={styles.container}>
         <FlashList
           data={messages}

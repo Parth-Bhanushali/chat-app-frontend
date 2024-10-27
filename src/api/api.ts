@@ -17,8 +17,10 @@ const api = axios.create({
 api.interceptors.request.use(
 	async (config) => {
 		const tokens = await storageService.getSavedTokens();
-		authToken = tokens?.accessToken;
-		config.headers.Authorization = authToken;
+		if (tokens) {
+			authToken = tokens.accessToken;
+			config.headers.Authorization = authToken;
+		}
 		return config;
 	},
 	(error) => {
@@ -42,7 +44,7 @@ api.interceptors.response.use(
 				return console.error(e);
 			}
 		} else {
-			return Promise.reject(error);
+			return Promise.reject(error?.response?.data);
 		}
 	}
 );

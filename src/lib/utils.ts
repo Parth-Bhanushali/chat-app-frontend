@@ -21,3 +21,14 @@ export function formatTime(dateString: string): string {
 	const date = new Date(dateString);
 	return format(date, 'HH:mm');
 }
+
+export const formatJoinedDate = (dateString: string): string => {
+  try {
+    const date = parseISO(dateString);
+    return format(date, 'MMMM d, yyyy, h:mm a');
+  } catch (error) {
+    console.error('Error parsing date:', error);
+    return 'Invalid date';
+  }
+};
+

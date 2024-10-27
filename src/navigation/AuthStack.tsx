@@ -7,17 +7,17 @@ const Stack = createNativeStackNavigator();
 
 export default function AuthStack() {
 	return (
-		<Stack.Navigator initialRouteName="login">
+		<Stack.Navigator initialRouteName="login" screenOptions={{
+			headerTitle: 'Mini Chat App',
+		}}>
 			<Stack.Screen
 				name="login"
 				component={LoginScreen}
-				options={{ headerShown: false }}
 			/>
 
 			<Stack.Screen
 				name="register"
 				component={RegisterScreen}
-				options={{ headerShown: false }}
 			/>
 		</Stack.Navigator>
 	);
