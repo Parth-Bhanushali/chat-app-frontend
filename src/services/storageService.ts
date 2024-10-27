@@ -19,14 +19,17 @@ const storageService = {
 		}
 		return currentUser;
 	},
-	getSavedTokens: async (): Promise<{authToken: string, refreshToken: string} | null> => {
+	getSavedTokens: async (): Promise<{accessToken: string, refreshToken: string} | null> => {
 		let currentUser = await AsyncStorage.getItem(ASYNC_STORAGE_USER_KEY);
 		if (!currentUser) {
 			return null;
 		}
 
-		const { authToken, refreshToken } = JSON.parse(currentUser);
-		return {authToken, refreshToken};
+		const { accessToken, refreshToken } = JSON.parse(currentUser);
+		return {accessToken, refreshToken};
+	},
+	updateAcessTokenLocally: async(accessToken: string) => {
+		await AsyncStorage.mergeItem(ASYNC_STORAGE_USER_KEY, JSON.stringify({accessToken}));
 	},
 };
 

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, FlatList, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import api from '../api/api';
-import { useAuth } from '../context/AuthContext';
 
 export interface Contact {
   _id: string;
@@ -10,16 +9,11 @@ export interface Contact {
 }
 
 const ChatOverviewScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const { user } = useAuth();
   const [contacts, setContacts] = useState<Contact[]>([]);
 
   const fetchContacts = async () => {
     try {
-      const response = await api.get('/chat/contacts', {
-        headers: {
-          'Authorization': user.accessToken,
-        },
-      });
+      const response = await api.get('/chat/contacts');
       setContacts(response.data);
     } catch (error) {
       console.error('Error fetching contacts:', error);

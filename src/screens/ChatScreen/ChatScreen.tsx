@@ -87,11 +87,7 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
     setNewMessage('');
 
     try {
-      await api.post('/chat/messages', messageData, {
-        headers: {
-          Authorization: user.accessToken,
-        },
-      });
+      await api.post('/chat/messages', messageData);
     } catch (error) {
       console.log('Error sending message:', error);
     }
@@ -99,11 +95,7 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
 
   const fetchMessages = React.useCallback(async () => {
     try {
-      const response = await api.get('/chat/messages/' + chatWith._id, {
-        headers: {
-          Authorization: user.accessToken,
-        },
-      });
+      const response = await api.get('/chat/messages/' + chatWith._id);
       setMessages(response.data.reverse());
     } catch (error) {
       console.log('Error fetching messages:', error);
@@ -112,12 +104,7 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
 
   const pollUserStatus = React.useCallback(async () => {
     try {
-      const response = await api.get(`/users/${chatWith._id}/status`, {
-        headers: {
-          Authorization: user.accessToken,
-        },
-      });
-
+      const response = await api.get(`/users/${chatWith._id}/status`);
       const { isOnline, lastSeen } = response.data;
       setRecipientStatus(formatOnlineStatus(isOnline, lastSeen));
     } catch (error) {
