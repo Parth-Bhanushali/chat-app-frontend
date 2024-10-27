@@ -4,7 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { StatusBar } from 'react-native';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
-import ChatScreen from '../screens/ChatScreen';
+import ChatScreen from '../screens/ChatScreen/ChatScreen';
 import ChatOverviewScreen from '../screens/ChatOverviewScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 

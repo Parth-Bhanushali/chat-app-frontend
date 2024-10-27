@@ -26,11 +26,15 @@ const ChatOverviewScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
 
+  const headerRight = React.useCallback(() => (
+    <TouchableOpacity onPress={() => navigation.navigate('profile')}>
+      <Text>Profile</Text>
+    </TouchableOpacity>
+  ), []);
+
 	useEffect(() => {
 		navigation.setOptions({
-      headerRight: (() => <TouchableOpacity onPress={() => navigation.navigate('profile')}>
-      <Text>Profile</Text>
-    </TouchableOpacity>),
+      headerRight: headerRight,
     });
 	}, []);
 

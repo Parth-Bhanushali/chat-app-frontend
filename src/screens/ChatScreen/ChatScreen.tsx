@@ -2,21 +2,25 @@ import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
   View,
   TextInput,
-  Button,
-  FlatList,
-  Text,
   StyleSheet,
+  ImageBackground,
+  TouchableOpacity,
 } from 'react-native';
 import io, { Socket } from 'socket.io-client';
-import {useAuth} from '../context/AuthContext';
-import api from '../api/api';
+import {useAuth} from '../../context/AuthContext';
+import api from '../../api/api';
 import {SERVER_URL} from '@env';
 import { useNavigation } from '@react-navigation/native';
-import { Contact } from './ChatOverviewScreen';
+import { Contact } from '../ChatOverviewScreen';
 import { DefaultEventsMap } from '@socket.io/component-emitter';
-import { timeAgo } from '../lib/utils';
-import HeaderLeft from '../components/HeaderLeft';
-import HeaderTitle from '../components/HeaderTitle';
+import { formatOnlineStatus } from '../../lib/utils';
+import HeaderLeft from './components/HeaderLeft';
+import HeaderTitle from './components/HeaderTitle';
+import HeaderRight from './components/HeaderRight';
+import MessageItem from '../../components/MessageItem';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import type { IRecipientActiveStatus } from '../../types/custom';
+import { FlashList } from '@shopify/flash-list';
 
 const subscribeToUserStatus = (socket: Socket<DefaultEventsMap, DefaultEventsMap>, targetUserId: string) => {
   socket.emit('subscribeToUserStatus', targetUserId);
@@ -34,8 +38,9 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
   const navigation = useNavigation();
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const [recipientStatus, setRecipientStatus] = useState<'loading'|'online'|string>('loading');
-  const flatlistRef = useRef<FlatList | null>(null);
+  const [recipientStatus, setRecipientStatus] = useState<IRecipientActiveStatus>('loading');
+  const flatlistRef = useRef<FlashList<any> | null>(null);
+  const enableSendButton = newMessage.trim().length > 0;
 
   const socket = useMemo(() => io(SERVER_URL), []);
 
@@ -47,8 +52,7 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
 
     socket.on('userStatusChanged', (iStatus) => {
       const { isOnline, lastSeen } = iStatus;
-      const newStatus = isOnline ? 'online' : timeAgo(lastSeen);
-      setRecipientStatus(newStatus);
+      setRecipientStatus(formatOnlineStatus(isOnline, lastSeen));
     });
 
     socket.on('receiveMessage', message => {
@@ -78,8 +82,9 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
   const sendMessage = async () => {
     const messageData = {
       receiver: chatWith._id,
-      content: newMessage,
+      content: newMessage.toString(),
     };
+    setNewMessage('');
 
     try {
       await api.post('/chat/messages', messageData, {
@@ -87,7 +92,6 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
           Authorization: user.accessToken,
         },
       });
-      setNewMessage('');
     } catch (error) {
       console.log('Error sending message:', error);
     }
@@ -115,25 +119,27 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
       });
 
       const { isOnline, lastSeen } = response.data;
-      const newStatus = isOnline ? 'online' : timeAgo(lastSeen);
-      setRecipientStatus(newStatus);
+      setRecipientStatus(formatOnlineStatus(isOnline, lastSeen));
     } catch (error) {
       console.log('Error polling user status:', error);
     }
   }, []);
 
-  const headerLeft = React.useCallback(() => HeaderLeft(navigation), [navigation]);
+  const headerLeft = React.useCallback(() => <HeaderLeft navigation={navigation} />, []);
   const headerTitle = React.useCallback(() =>
   <HeaderTitle
     title={chatWith.fullName}
     subtitle={recipientStatus}
     profileImageChar={chatWith.fullName[0].toUpperCase()} />
     , [recipientStatus, chatWith.fullName]);
+  const headerRight = React.useCallback(() => <HeaderRight />, []);
+
 
   useEffect(() => {
     navigation.setOptions({
       headerLeft: headerLeft,
       headerTitle: headerTitle,
+      headerRight: headerRight,
     });
   }, [recipientStatus]);
 
@@ -145,67 +151,104 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
   const renderMessageItem = React.useCallback(
     ({item, index}: {item: any; index: number}) => {
       const userIsSender = item.sender === user.id;
-
-      return (
-        <Text
-          key={item + '' + index}
-          style={[userIsSender ? styles.userMessage : styles.anonMessage]}>
-          {item.content}
-        </Text>
-      );
+      return <MessageItem item={item} index={index} userIsSender={userIsSender} />;
     },
     [user.id],
   );
 
-  return (
-    <View style={styles.container}>
-      <FlatList
-        data={messages}
-        ref={flatlistRef}
-        inverted
-        renderItem={renderMessageItem}
-        contentContainerStyle={styles.contentContainer}
-      />
+  const renderItemSeparator = React.useCallback((props: any) => {
+    const { leadingItem, trailingItem } = props;
+    const variableSeparatorStyle = {
+      height: trailingItem.sender !== leadingItem.sender ? 24 : 8,
+    };
+    return <View style={variableSeparatorStyle} />;
+  }, []);
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Type a message"
-          value={newMessage}
-          onChangeText={setNewMessage}
+  return (
+    <ImageBackground style={styles.BG} source={require('../../assets/pattern.png')}>
+      <View style={styles.container}>
+        <FlashList
+          data={messages}
+          ref={flatlistRef}
+          inverted
+          renderItem={renderMessageItem}
+          estimatedItemSize={100}
+          showsVerticalScrollIndicator={false}
+          ItemSeparatorComponent={renderItemSeparator}
+          contentContainerStyle={styles.contentContainer}
         />
-        <Button title="Send" onPress={sendMessage} />
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Type a message"
+            value={newMessage}
+            onChangeText={setNewMessage}
+            multiline
+            style={styles.messageInput}
+          />
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={[styles.sendMessageButton, enableSendButton ? styles.sendMessageButtonEnabled : styles.sendMessageButtonDisabled]}
+            onPress={sendMessage}
+          >
+            <Ionicons name="send" size={20} color="white" />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+
+      <View style={styles.tintOverBG} />
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  BG: {
+    flex: 1,
+  },
+  tintOverBG: {
     flex: 1,
     backgroundColor: 'white',
+    position: 'absolute',
+    opacity: 0.075,
+    zIndex: 0,
+    width: '100%',
+    height: '100%',
+  },
+  container: {
+    flex: 1,
+    zIndex: 2,
   },
   contentContainer: {
-    flexGrow: 1,
-    padding: 20,
-    gap: 12,
-  },
-  userMessage: {
-    alignSelf: 'flex-end',
-    backgroundColor: '#d1e7dd',
-    padding: 10,
-    borderRadius: 5,
-    color: 'black',
-  },
-  anonMessage: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#f1f1f1',
-    padding: 10,
-    borderRadius: 5,
-    color: 'black',
+    padding: 16,
   },
   inputContainer: {
-    padding: 16,
-    paddingTop: 0,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: 'rgba(255,255,255,0.65)',
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  messageInput: {
+    flex: 1,
+  },
+  sendMessageButton: {
+    paddingLeft: 2,
+    overflow: 'hidden',
+    width: 45,
+    height: 45,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sendMessageButtonEnabled: {
+    backgroundColor: '#2d9147',
+  },
+  sendMessageButtonDisabled: {
+    backgroundColor: '#c3c7c4',
   },
 });
 
