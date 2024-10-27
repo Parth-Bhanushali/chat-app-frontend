@@ -12,7 +12,7 @@ const LoginScreen = ({ navigation }: any) => {
     try {
       const response = await api.post('/auth/login', { username, password });
       login(response.data);
-      navigation.navigate('chatOverview');
+      navigation.replace('main');
     } catch (error) {
       console.log('Login failed:', JSON.stringify(error, null, 3));
       Alert.alert('Error', 'Login failed');

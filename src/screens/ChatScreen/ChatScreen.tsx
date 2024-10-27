@@ -144,8 +144,14 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
   }, [recipientStatus]);
 
   useEffect(() => {
-    fetchMessages();
-    pollUserStatus();
+    const timeout = setTimeout(() => {
+      fetchMessages();
+      pollUserStatus();
+    }, 200);
+
+    return () => {
+      clearTimeout(timeout);
+    }
   }, []);
 
   const renderMessageItem = React.useCallback(

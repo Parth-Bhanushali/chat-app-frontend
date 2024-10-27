@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     shadowColor: 'gray',
     borderRadius: 5,
     paddingHorizontal: 10,
-    paddingVertical: 8,
+    paddingVertical: 6,
   },
 	messageText: {
     fontSize: 14,

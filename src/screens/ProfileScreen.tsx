@@ -16,7 +16,7 @@ const ProfileScreen = (props: Props) => {
 	function handleLogout() {
 		logout();
 		// @ts-ignore
-		navigation.navigate('login');
+		navigation.replace('auth');
 	}
 
 	return (
@@ -45,6 +45,6 @@ const styles = StyleSheet.create({
 	},
 	profileDetailsContainer: {
 		flex: 1,
-		gap: 8
+		gap: 8,
 	},
 });
