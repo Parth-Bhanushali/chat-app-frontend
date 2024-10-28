@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 16,
-  }
+  },
 });
 
 export default React.memo(ListEmptyComponent);

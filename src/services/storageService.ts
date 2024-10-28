@@ -8,7 +8,7 @@ const storageService = {
 		if (savedUser) {
 			savedUser = JSON.parse(savedUser);
 			// @ts-ignore
-			isLoggedIn = savedUser && savedUser.accessToken && savedUser.refreshToken
+			isLoggedIn = savedUser && savedUser.accessToken && savedUser.refreshToken;
 		}
 		return isLoggedIn;
 	},

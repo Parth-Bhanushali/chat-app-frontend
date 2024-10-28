@@ -20,7 +20,7 @@ export default function MainStack() {
 				<Stack.Screen
 					name="chatOverview"
 					component={ChatOverviewScreen}
-					options={{ 
+					options={{
 						headerShown: true,
 						headerTitle: 'Mini Chat App',
 					}}

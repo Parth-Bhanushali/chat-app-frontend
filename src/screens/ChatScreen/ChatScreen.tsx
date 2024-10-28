@@ -160,10 +160,10 @@ const ChatScreen: React.FC<{route: {params: {chatWith: Contact}}}> = ({
 
   return (
     <ImageBackground style={styles.BG} source={require('../../assets/pattern.png')}>
-      <ListEmptyComponent 
-        loading={loading} 
-        error={errorVal} 
-        empty={!messages || messages.length === 0} 
+      <ListEmptyComponent
+        loading={loading}
+        error={errorVal}
+        empty={!messages || messages.length === 0}
       />
 
       <View style={styles.container}>
