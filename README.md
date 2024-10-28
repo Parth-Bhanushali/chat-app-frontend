@@ -1,79 +1,78 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Mini Chat App - Realtime Chat Communication Demo.
+Backend is linked at [`chat-app-backend`](https://github.com/Parth-Bhanushali/chat-app-backend).
 
-# Getting Started
+A React Native project demonstrating integration of Node.js, Express.js and Socket.io for Realtime Chat Communication.
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+Provides a good foundation stone to begin with building a full-featured chat application.
 
-## Step 1: Start the Metro Server
+# Screenshots
+**Click on images to enlarge**
+### Android
+<img src=screenshots/android/android_ss_1.png height=500 > &nbsp; &ensp; <img src=screenshots/android/android_ss_2.png height=500>
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+<img src=screenshots/android/android_ss_3.png height=500> &nbsp; &ensp; <img src=screenshots/android/android_ss_4.png height=500> 
 
-To start Metro, run the following command from the _root_ of your React Native project:
+<img src=screenshots/android/android_ss_5.png height=500 > &nbsp; &ensp; <img src=screenshots/android/android_ss_6.png height=500>
 
-```bash
-# using npm
-npm start
+<img src=screenshots/android/android_ss_7.png height=500> &nbsp; &ensp; <img src=screenshots/android/android_ss_8.png height=500> 
 
-# OR using Yarn
-yarn start
-```
 
-## Step 2: Start your Application
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
+## How to run and test
 
-### For Android
+1. Clone this repo and open using Visual Studio Code or any preferred IDE.
 
-```bash
-# using npm
-npm run android
 
-# OR using Yarn
-yarn android
-```
+2. Install dependencies
 
-### For iOS
+   ```bash
+   yarn install
+   ```
 
-```bash
-# using npm
-npm run ios
+3. Open env.sample file and follow the instructions to setup environment variables.
 
-# OR using Yarn
-yarn ios
-```
+4. Run the app on Android
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+   ```bash
+    yarn android
+   ```
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+   or
 
-## Step 3: Modifying your App
+   ```bash
+    yarn start      
+   ```
+   (select android from selection menu)
 
-Now that you have successfully run the app, let's modify it.
+5. Run the app on iOS
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+   ```bash
+    yarn ios
+   ```
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+   or
 
-## Congratulations! :tada:
+   ```bash
+    yarn start
+   ```
+   (select ios from selection menu)
 
-You've successfully run and modified your React Native App. :partying_face:
+## Additional note for iOS
 
-### Now what?
+- This hasn't been tested on iOS as of yet. May require additional configuration to run on it like ``` pod install ``` and  ``` manual configuration ``` for few dependencies.
+   
+## Project Overview
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
+- **Project Setup**: Initialized a new React Native project and started with a clean slate.
+- **Functionality**:
+   - Authentication system
+   - Socket.io integration with backend for realtime communication and checking active user status.
+   - UI for chat.
+   - etc.
+- **Pages Created**:
+  - **Login Page**: Allowed signing in via username and password.
+  - **Register Page**: Signup via username, password and full name for onboarding purposes.
+  - **Home/ChatOverview Page**: Display joined users on the servers and ones available to chat with.
+  - **Chat Page**: Detailed chat page to communicate with peers in real-time. Uses socket io to actively listen to new messages while also leverages on-demand polling. Also track the user's online/offline status.
+  - **Profile Page**: A page where user can see some of his information provided to server, while providing a way to log out if needed.
 
-# Troubleshooting
-
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
