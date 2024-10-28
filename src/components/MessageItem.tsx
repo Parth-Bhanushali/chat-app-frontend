@@ -53,18 +53,19 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    alignSelf: 'flex-end',
     elevation: 1,
     shadowColor: 'gray',
     borderRadius: 5,
     paddingHorizontal: 10,
     paddingVertical: 6,
+    maxWidth: '80%',
   },
 	messageText: {
     fontSize: 14,
     paddingBottom: 2,
     paddingRight: 8,
     color: 'black',
+    flexShrink: 1,
 	},
   infoContainer: {
     flexDirection: 'row',
